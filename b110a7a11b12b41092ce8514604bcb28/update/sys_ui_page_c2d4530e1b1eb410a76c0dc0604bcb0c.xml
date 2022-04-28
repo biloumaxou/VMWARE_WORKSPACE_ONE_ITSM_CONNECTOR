@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_ui_page">
+    <sys_ui_page action="INSERT_OR_UPDATE">
+        <category>general</category>
+        <client_script><![CDATA[/**
+On Load page that updates the contents of the
+CMDBIntegration page, in which the user can fill in
+authentication credentials.
+**/
+onLoad();
+
+function onLoad() {
+    //get the system parameter whether to display the URL 
+    var action_table = new GlideRecord('sys_properties');
+    action_table.addQuery('name', "x_vmw_ws1uem.WS1UEMURLDisplay");
+    action_table.query();
+    action_table.next();
+	
+    // if installed get the state of our system parameter
+    if (action_table.value === "true") {
+        $("input_ws1_url").checked = true;
+    } else {
+        $("input_ws1_url").checked = false;
+    }
+}
+
+
+// update system parameter when the checkbox for URL Display changes state.
+function updateURLDisplay(checkbox) {
+    var action_table = new GlideRecord('sys_properties');
+    action_table.addQuery('name', "x_vmw_ws1uem.WS1UEMURLDisplay");
+    action_table.query();
+    action_table.next();
+    
+	var http_table = new GlideRecord('http_connection');
+    http_table.addQuery('name', "Workspace ONE UEM ITSM OAuth Credentials");
+    http_table.query();
+    http_table.next();
+
+	var action_url = new GlideRecord('sys_properties');
+    action_url.addQuery('name', "x_vmw_ws1uem.WS1UEMURL");
+    action_url.query();
+    action_url.next();
+	
+	if (checkbox.checked) {
+        action_table.value = "true";
+		action_url.value = http_table.protocol + "://" + http_table.host;
+    } else {
+        action_table.value = "false";
+		action_url.value = "";
+    }
+    action_table.update();
+	action_url.update();
+}
+]]></client_script>
+        <description>CMDB Configuration validation page</description>
+        <direct>false</direct>
+        <endpoint>x_vmw_ws1uem_WS1UEMCMDBIntegration.do</endpoint>
+        <html><![CDATA[<?xml version="1.0" encoding="utf-8" ?>
+<j:jelly trim="false" xmlns:j="jelly:core" xmlns:g="glide" xmlns:j2="null" xmlns:g2="null">
+    <g:ui_form>
+		
+	<style>
+		.section {
+			margin: 0 0 10px 10px;
+			width: 40%;
+		}
+		
+		.section-title {
+			font-size: medium;
+			margin-bottom: 5px;
+		}
+		
+		.checkbox-table {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-bottom: 5px;
+		}
+		
+		.checkbox-cell {
+			margin: 0 1em;
+		}
+		
+		.centered {
+			text-align: center;
+		}
+	</style>
+		
+	<div class="section">
+		<div class="section-title">
+			<strong>${gs.getMessage('WS1UEMConsoleUrl')}</strong>
+		</div>
+		<div class="checkbox-table">
+			<div class="checkbox-cell centered">
+				<span class="input-group-checkbox">
+					<input
+						   type="checkbox"
+						   class="checkbox"
+						   name="input_ws1_url"
+						   id="input_ws1_url"
+						   onclick="updateURLDisplay(this)"
+						   style="margin: 0"/>
+					<label for="input_ws1_url" class="checkbox-label"></label>
+				</span>
+			</div>
+			
+			<div>
+				${gs.getMessage('WS1UEMConfigureDefaults')} 
+			</div>
+		</div>
+	</div>
+		
+	</g:ui_form>
+</j:jelly>]]></html>
+        <name>WS1UEMCMDBIntegration</name>
+        <processing_script/>
+        <sys_class_name>sys_ui_page</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2021-09-01 16:31:15</sys_created_on>
+        <sys_id>c2d4530e1b1eb410a76c0dc0604bcb0c</sys_id>
+        <sys_mod_count>84</sys_mod_count>
+        <sys_name>WS1UEMCMDBIntegration</sys_name>
+        <sys_package display_value="VMware Workspace ONE ITSM Connector" source="x_vmw_ws1uem">b110a7a11b12b41092ce8514604bcb28</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="VMware Workspace ONE ITSM Connector">b110a7a11b12b41092ce8514604bcb28</sys_scope>
+        <sys_update_name>sys_ui_page_c2d4530e1b1eb410a76c0dc0604bcb0c</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2021-10-01 19:15:43</sys_updated_on>
+    </sys_ui_page>
+</record_update>
